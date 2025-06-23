@@ -1,0 +1,57 @@
+# 📦 Importar librerías necesarias
+import pandas as pd
+import matplotlib.pyplot as plt
+import seaborn as sns
+
+# 📊 Crear DataFrame con los datos
+data = pd.DataFrame({
+    "Trimestre": [
+        "jul-20/sep-20", "ago-20/oct-20", "sep-20/nov-20", "oct-20/dic-20", "nov-20/ene-21", 
+        "dic-20/feb-21", "ene-21/mar-21", "feb-21/abr-21", "mar-21/may-21", "abr-21/jun-21",
+        "may-21/jul-21", "jun-21/ago-21", "jul-21/sep-21", "ago-21/oct-21", "sep-21/nov-21", 
+        "oct-21/dic-21"
+    ],
+    "Barranquilla_AM": [
+        45.3, 43.7, 43.2, 43.9, 45.8, 42.5, 39.3, 36.2, 33.4, 30.8,
+        31.5, 34.6, 36.2, 37.8, 34.2, 33.95
+    ],
+    "Total_23_ciudades": [
+        71.2, 70.8, 70.5, 70.1, 69.8, 69.2, 68.9, 67.5, 66.9, 66.1,
+        66.8, 68.5, 69.4, 70.1, 69.8, 69.7
+    ]
+})
+
+# 🔄 Convertir a formato largo
+data_long = pd.melt(data, id_vars="Trimestre", var_name="Ciudad", value_name="Porcentaje")
+
+# 🧽 Ajustar estilo
+sns.set(style="whitegrid")
+
+# 🎨 Crear gráfico
+plt.figure(figsize=(12, 6))
+sns.lineplot(data=data_long, x="Trimestre", y="Porcentaje", hue="Ciudad", marker="o")
+
+# 🏷️ Etiquetas al final de cada línea
+for ciudad in data_long["Ciudad"].unique():
+    ultimo = data_long[data_long["Ciudad"] == ciudad].iloc[-1]
+    plt.text(
+        x=ultimo["Trimestre"],
+        y=ultimo["Porcentaje"],
+        s=f'{ultimo["Porcentaje"]:.2f}',
+        color="black" if "Total" in ciudad else "purple",
+        fontweight="bold",
+        ha="left",
+        va="center"
+    )
+
+# 🧾 Personalizar
+plt.title("¿En promedio cuántas comidas se consumían en su hogar?", fontsize=14, weight="bold")
+plt.suptitle('Porcentaje de hogares que respondieron "Tres o más"', fontsize=10, y=0.93)
+plt.xlabel("Trimestre móvil")
+plt.ylabel("Porcentaje (%)")
+plt.xticks(rotation=45)
+plt.legend(title="Ciudad", loc="lower left")
+plt.figtext(0.01, -0.05, "Fuente: DANE – Pulso Social 2020–2021", ha="left", fontsize=9)
+
+plt.tight_layout()
+plt.show()
